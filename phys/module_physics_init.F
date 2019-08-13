@@ -1177,7 +1177,8 @@ CONTAINS
                 TRIM ( mminlu_loc ) ,                               &
                 landuse_ISICE, landuse_LUCATS,                      &
                 landuse_LUSEAS, landuse_ISN,                        &
-                config_flags%fractional_seaice,                      &
+                config_flags%fractional_seaice,                     &
+                config_flags%z_f,                                   &
                 lu_state,                                           &
                 allowed_to_read , usemonalb ,                       &
                 ids, ide, jds, jde, kds, kde,                       &
@@ -1566,6 +1567,7 @@ CONTAINS
                 znt,Z0,thc,xland, xice, xicem, julday, cen_lat, iswater, mminlu,  &
                 ISICE, LUCATS, LUSEAS, ISN,                         &
                 fractional_seaice,                                  &
+                z_f,                                                &
                 lu_state,                                           &
                 allowed_to_read , usemonalb ,                       &
                 ids, ide, jds, jde, kds, kde,                       &
@@ -1581,7 +1583,7 @@ CONTAINS
                                      its, ite, jts, jte, kts, kte
 
    INTEGER , INTENT(IN)           :: iswater, julday
-   REAL    , INTENT(IN)           :: cen_lat
+   REAL    , INTENT(IN)           :: cen_lat, z_f
    CHARACTER(LEN=*), INTENT(IN)        :: mminlu
    LOGICAL,  INTENT(IN)           :: allowed_to_read , usemonalb
    REAL,     DIMENSION( ims:ime , jms:jme ) , INTENT(IN   ) :: lu_index, snowc, xice, snoalb 
@@ -1775,7 +1777,7 @@ CONTAINS
              ENDIF
           ENDIF
           THC(I,J)=THERIN(IS,ISN)/100.
-          Z0(I,J)=SFZ0(IS,ISN)/100.
+          Z0(I,J)=SFZ0(IS,ISN)/100. * z_f
           ZNT(I,J)=Z0(I,J)
           EMBCK(I,J)=SFEM(IS,ISN)
           EMISS(I,J)=EMBCK(I,J)
@@ -1801,7 +1803,7 @@ CONTAINS
                EMISS(I,J)=EMBCK(I,J)
             ENDIF
             THC(I,J)=THERIN(ISICE,ISN)/100.
-            Z0(I,J)=SFZ0(ISICE,ISN)/100.
+            Z0(I,J)=SFZ0(ISICE,ISN)/100. * z_f
             ZNT(I,J)=Z0(I,J)
             MAVAIL(I,J)=SLMO(ISICE,ISN)
           ENDIF

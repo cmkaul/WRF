@@ -2096,6 +2096,9 @@ END SUBROUTINE smag2d_km
     REAL            :: tke_seed
     REAL, PARAMETER :: epsilon = 1.e-10
 
+   ! Colleen Kaul (CK) additions for UQ
+   REAL :: c_n ! Length scale coefficient 
+
 ! End declarations.
 !-----------------------------------------------------------------------
 
@@ -2151,7 +2154,9 @@ END SUBROUTINE smag2d_km
       dthrdn(i,k,j) = ( thetatop - theta(i,k-1,j) ) / tmpdz
     END DO
     END DO
-
+    
+    ! CK UQ
+    c_n = config_flags%c_n
     IF ( isotropic .EQ. 0 ) THEN
       DO j = j_start, j_end
       DO k = kts, ktf
@@ -2161,7 +2166,7 @@ END SUBROUTINE smag2d_km
         deltas = 1.0 / rdzw(i,k,j)
         mlen_v = deltas
         IF ( dthrdn(i,k,j) .GT. 0.) THEN
-          mlen_s = 0.76 * tmp / ( ABS( g / theta(i,k,j) * dthrdn(i,k,j) ) )**0.5
+          mlen_s = c_n * tmp / ( ABS( g / theta(i,k,j) * dthrdn(i,k,j) ) )**0.5
           mlen_v = MIN( mlen_v, mlen_s )
         END IF
         xkmh(i,k,j)  = MAX( c_k * tmp * mlen_h, 1.0E-6 * mlen_h * mlen_h )
@@ -2249,9 +2254,12 @@ END SUBROUTINE smag2d_km
     REAL  &
     :: deltas, tmp
 
+    ! CK UQ
+    REAL :: c_n
 ! End declarations.
 !-----------------------------------------------------------------------
 
+    c_n = config_flags%c_n
     DO j = j_start, j_end
     DO k = kts, ktf
     DO i = i_start, i_end
@@ -2260,7 +2268,7 @@ END SUBROUTINE smag2d_km
 
       IF ( BN2(i,k,j) .gt. 1.0e-6 ) THEN
         tmp            = SQRT( MAX( tke(i,k,j), 1.0e-6 ) )
-        l_scale(i,k,j) = 0.76 * tmp / SQRT( BN2(i,k,j) )
+        l_scale(i,k,j) = c_n * tmp / SQRT( BN2(i,k,j) )
         l_scale(i,k,j) = MIN( l_scale(i,k,j), deltas)
         l_scale(i,k,j) = MAX( l_scale(i,k,j), 0.001 * deltas )
       END IF
@@ -5381,12 +5389,23 @@ END SUBROUTINE phy_bc
     :: disp_len, deltas, coefc, tmpdz, len_s, thetasfc,  &
        thetatop, len_0, tketmp, tmp, ce1, ce2, c_k
 
+   ! Colleen Kaul (CK) additions for UQ
+   REAL :: c_eN, ri_c, c_eS, c_n
+
 ! End declarations.
 !-----------------------------------------------------------------------
     c_k = config_flags%c_k
+    ! CK UQ
+    c_eN = config_flags%c_eN
+    ri_c = config_flags%ri_c
+    c_n = config_flags%c_n
 
-    ce1 = ( c_k / 0.10 ) * 0.19
-    ce2 = max( 0.0 , 0.93 - ce1 )
+    c_eS = c_k * c_n * c_n * (1.0/ri_c - 1.0)
+    ce1 = c_eS
+    ce2 = c_eN - c_eS
+
+    !ce1 = ( c_k / 0.10 ) * 0.19
+    !ce2 = max( 0.0 , 0.93 - ce1 )
 
     ktf     = MIN( kte, kde-1 )
     i_start = its

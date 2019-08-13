@@ -2603,7 +2603,7 @@ rconfig   integer use_q_diabatic          namelist,dynamics     1              0
 rconfig   real    c_s                     namelist,dynamics     max_domains    0.25    h    "c_s"         "Smagorinsky coeff"      ""
 rconfig   real    c_k                     namelist,dynamics     max_domains    0.15    h    "c_k"         "TKE coeff"      ""
 rconfig   real    c_n                     namelist,dynamics     max_domains    0.76    h    "c_n"         "TKE length scale coeff"  
-rconfig   real    c_e1                    namelist,dynamics     max_domains    0.93    h    "c_e1"         "TKE dissipation coeff, neutral limit"  
+rconfig   real    c_eN                    namelist,dynamics     max_domains    0.93    h    "c_e1"         "TKE dissipation coeff, neutral limit"  
 rconfig   real    ri_c                    namelist,dynamics     max_domains    0.2     h    "ri_c"         "SGS critical Ri"  
 rconfig   real    z_f                     namelist,dynamics     max_domains    1.0     h    "z_f"         "surface roughness enhancement"
 rconfig   real    smdiv                   namelist,dynamics	max_domains    0.1     h    "smdiv"         ""      ""

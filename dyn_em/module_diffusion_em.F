@@ -2098,7 +2098,7 @@ END SUBROUTINE smag2d_km
 
    ! Colleen Kaul (CK) additions for UQ
    REAL :: c_n ! Length scale coefficient 
-
+   REAL :: pr_n_exp ! Exponential factor for inverse prandtl number
 ! End declarations.
 !-----------------------------------------------------------------------
 
@@ -2157,6 +2157,7 @@ END SUBROUTINE smag2d_km
     
     ! CK UQ
     c_n = config_flags%c_n
+    pr_n_exp = config_flags%pr_n_exp
     IF ( isotropic .EQ. 0 ) THEN
       DO j = j_start, j_end
       DO k = kts, ktf
@@ -2196,7 +2197,7 @@ END SUBROUTINE smag2d_km
         xkmh(i,k,j)  = MIN( mix_upper_bound * dx/msftx(i,j) * dy/msfty(i,j) / dt,  xkmh(i,k,j) )
         xkmv(i,k,j)  = c_k * tmp * l_scale(i,k,j)
         xkmv(i,k,j)  = MIN( mix_upper_bound / rdzw(i,k,j) / rdzw(i,k,j) / dt ,  xkmv(i,k,j) )
-        pr_inv       = 1.0 + 2.0 * l_scale(i,k,j) / deltas
+        pr_inv       = 1.0 + 2.0 * (l_scale(i,k,j) / deltas)** pr_n_exp ! CK (Colleen Kaul) UQ change
         xkhh(i,k,j)  = MIN( mix_upper_bound * dx/msftx(i,j) * dy/msfty(i,j) / dt, xkmh(i,k,j) * pr_inv )
         xkhv(i,k,j)  = MIN( mix_upper_bound / rdzw(i,k,j) / rdzw(i,k,j) / dt, xkmv(i,k,j) * pr_inv )
       END DO
